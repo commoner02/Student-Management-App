@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+</head>
+<body>
+<h2>Teacher Dashboard</h2>
+<p>Welcome, Teacher!</p>
+
+<h3>Management Actions:</h3>
+<ul>
+    <li><a th:href="@{/teacher/students}">Manage Students</a></li>
+    <li><a th:href="@{/teacher/add-student}">Add New Student</a></li>
+    <li><a th:href="@{/teacher/courses}">Manage Courses</a></li>
+    <li><a th:href="@{/teacher/add-course}">Add New Course</a></li>
+    <li><a th:href="@{/teacher/departments}">Manage Departments</a></li>
+    <li><a th:href="@{/teacher/add-department}">Add New Department</a></li>
+</ul>
+
+<h3>Student Actions:</h3>
+<ul>
+    <li><a th:href="@{/teacher/students}">View All Students</a></li>
+    <li><a th:href="@{/teacher/enroll-student-course}">Enroll Student in Course</a></li>
+</ul>
+
+<a th:href="@{/dashboard}">Back to Main Dashboard</a>
+</body>
+</html>

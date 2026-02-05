@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Enroll Student in Course</title>
+</head>
+<body>
+<h2>Enroll Student in Course</h2>
+
+<div th:if="${error}" style="color: red" th:text="${error}"></div>
+<div th:if="${success}" style="color: green" th:text="${success}"></div>
+
+<form th:action="@{/teacher/enroll-student}" method="post">
+    <div>
+        <label>Select Student:</label>
+        <select name="studentId" required>
+            <option value="">-- Select Student --</option>
+            <option th:each="student : ${students}"
+                    th:value="${student.id}"
+                    th:text="${student.studentId + ' - ' + student.user.username}">
+            </option>
+        </select>
+    </div>
+    <div>
+        <label>Select Course:</label>
+        <select name="courseId" required>
+            <option value="">-- Select Course --</option>
+            <option th:each="course : ${courses}"
+                    th:value="${course.id}"
+                    th:text="${course.code + ' - ' + course.name + ' (' + course.department.name + ')'}">
+            </option>
+        </select>
+    </div>
+    <button type="submit">Enroll Student</button>
+</form>
+
+<br>
+<h3>Current Enrollments</h3>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Department</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.studentId + ' - ' + student.user.username}"></td>
+        <td>
+            <ul>
+                <li th:each="course : ${student.courses}"
+                    th:text="${course.code + ' - ' + course.name}"></li>
+            </ul>
+        </td>
+        <td th:text="${student.department.name}"></td>
+        <td>
+            <a th:href="@{'/teacher/view-student-courses/' + ${student.id}}">Manage Courses</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/teacher/courses}">Back to Courses</a> |
+<a th:href="@{/teacher/students}">Back to Students</a> |
+<a th:href="@{/teacher/dashboard}">Back to Dashboard</a>
+</body>
+</html>

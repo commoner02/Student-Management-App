@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Courses</title>
+</head>
+<body>
+<h2>All Courses</h2>
+
+<div th:if="${success}" style="color: green" th:text="${success}"></div>
+
+<a th:href="@{/teacher/add-course}">Add New Course</a> |
+<a th:href="@{/teacher/enroll-student}">Enroll Students in Courses</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Department</th>
+        <th>Teacher</th>
+        <th>Number of Students</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="course : ${courses}">
+        <td th:text="${course.code}"></td>
+        <td th:text="${course.name}"></td>
+        <td th:text="${course.department.name}"></td>
+        <td th:text="${course.teacher?.user?.username}"></td>
+        <td th:text="${course.students.size()}"></td>
+        <td>
+            <a th:href="@{'/teacher/edit-course/' + ${course.id}}">Edit</a> |
+            <a th:href="@{'/teacher/delete-course/' + ${course.id}}"
+               onclick="return confirm('Are you sure?')">Delete</a> |
+            <a th:href="@{'/teacher/view-course-students/' + ${course.id}}">View Students</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/teacher/dashboard}">Back to Dashboard</a>
+</body>
+</html>

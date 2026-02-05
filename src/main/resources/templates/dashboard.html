@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Welcome to Student Management System</h1>
+
+<div sec:authorize="isAuthenticated()">
+    <p>Logged in as: <span sec:authentication="name"></span></p>
+    <p>Role: <span sec:authentication="principal.authorities"></span></p>
+
+    <div sec:authorize="hasRole('STUDENT')">
+        <a th:href="@{/student/profile}">View/Edit Profile</a>
+    </div>
+
+    <div sec:authorize="hasRole('TEACHER')">
+        <h3>Teacher Actions:</h3>
+        <ul>
+            <li><a th:href="@{/teacher/dashboard}">Teacher Dashboard</a></li>
+            <li><a th:href="@{/teacher/students}">Manage Students</a></li>
+            <li><a th:href="@{/teacher/add-student}">Add New Student</a></li>
+            <li><a th:href="@{/teacher/courses}">Manage Courses</a></li>
+            <li><a th:href="@{/teacher/add-course}">Add New Course</a></li>
+            <li><a th:href="@{/teacher/departments}">Manage Departments</a></li>
+            <li><a th:href="@{/teacher/add-department}">Add New Department</a></li>
+        </ul>
+    </div>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+<div sec:authorize="!isAuthenticated()">
+    <p><a th:href="@{/login}">Login</a></p>
+    <p>Are you a teacher? <a th:href="@{/register/teacher}">Register as Teacher</a></p>
+</div>
+</body>
+</html>

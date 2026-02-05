@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register as Teacher</title>
+</head>
+<body>
+<h2>Register as Teacher</h2>
+
+<div th:if="${error}" style="color: red" th:text="${error}"></div>
+<div th:if="${success}" style="color: green" th:text="${success}"></div>
+
+<!-- Make sure form action matches controller mapping -->
+<form th:action="@{/register/teacher}" method="post">
+    <div>
+        <label>Username:</label>
+        <input type="text" name="username" required>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" name="password" required>
+    </div>
+    <div>
+        <label>Email:</label>
+        <input type="email" name="email" required>
+    </div>
+    <div>
+        <label>Employee ID:</label>
+        <input type="text" name="employeeId" required>
+    </div>
+    <div>
+        <label>Department:</label>
+        <select name="departmentId">
+            <option value="">-- Select Department --</option>
+            <option th:each="dept : ${departments}"
+                    th:value="${dept.id}"
+                    th:text="${dept.name + ' (' + dept.code + ')'}"></option>
+        </select>
+    </div>
+    <button type="submit">Register as Teacher</button>
+</form>
+
+<p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+<a th:href="@{/dashboard}">Back to Dashboard</a>
+</body>
+</html>

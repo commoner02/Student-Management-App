@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Students</title>
+    <style>
+        .courses-list {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<h2>All Students</h2>
+
+<div th:if="${success}" style="color: green" th:text="${success}"></div>
+
+<a th:href="@{/teacher/add-student}">Add New Student</a> |
+<a th:href="@{/teacher/enroll-student}">Enroll Students in Courses</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Student ID/Roll</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Department</th>
+        <th>Courses Enrolled</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.studentId}"></td>
+        <td th:text="${student.user.username}"></td>
+        <td th:text="${student.user.email}"></td>
+        <td th:text="${student.phone}"></td>
+        <td th:text="${student.department.name}"></td>
+        <td class="courses-list">
+            <span th:if="${student.courses.size() > 0}">
+                <span th:each="course : ${student.courses}"
+                      th:text="${course.code}"
+                      th:title="${course.name}">
+                </span>
+            </span>
+            <span th:if="${student.courses.size() == 0}" style="color: #999;">None</span>
+        </td>
+        <td>
+            <a th:href="@{'/teacher/edit-student/' + ${student.id}}">Edit</a> |
+            <a th:href="@{'/teacher/view-student-courses/' + ${student.id}}">Manage Courses</a> |
+            <a th:href="@{'/teacher/delete-student/' + ${student.id}}"
+               onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/teacher/dashboard}">Back to Dashboard</a>
+</body>
+</html>
