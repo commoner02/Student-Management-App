@@ -1,0 +1,59 @@
+name: Spring Boot Student Management App CI/CD
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Spin up Postgres for integration tests
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: smsdb_test
+          POSTGRES_PASSWORD: pass123
+          POSTGRES_USER: admin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (matches your pom.xml)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
+
+      - name: Run Tests with Maven Wrapper
+        run: ./mvnw clean test
+        env:
+          # Match your application.properties/docker-compose settings
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/smsdb_test
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: pass123
+          SPRING_JPA_HIBERNATE_DDL_AUTO: update
+          SPRING_JPA_SHOW_SQL: false
+
+      - name: Build JAR with Maven Wrapper
+        run: ./mvnw clean package -DskipTests
+
+      - name: Verify JAR file
+        run: |
+          ls -la target/*.jar
+          echo "Build completed successfully!"
