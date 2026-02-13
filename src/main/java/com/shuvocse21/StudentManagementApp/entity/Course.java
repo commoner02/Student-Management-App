@@ -23,10 +23,6 @@ public class Course {
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-
     @ManyToMany(mappedBy = "courses")
     private List<Student> students = new ArrayList<>();
 }

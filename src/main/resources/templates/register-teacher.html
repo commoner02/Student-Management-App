@@ -2,45 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Register as Teacher</title>
+    <title>Register Teacher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h2>Register as Teacher</h2>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white text-center">
+                    <h4>Teacher Registration</h4>
+                </div>
+                <div class="card-body">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-<div th:if="${error}" style="color: red" th:text="${error}"></div>
-<div th:if="${success}" style="color: green" th:text="${success}"></div>
+                    <form th:action="@{/register/teacher}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Username:</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password:</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email:</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Employee ID:</label>
+                            <input type="text" class="form-control" name="employeeId" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Register</button>
+                    </form>
 
-<!-- Make sure form action matches controller mapping -->
-<form th:action="@{/register/teacher}" method="post">
-    <div>
-        <label>Username:</label>
-        <input type="text" name="username" required>
+                    <div class="mt-3 text-center">
+                        <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" name="password" required>
-    </div>
-    <div>
-        <label>Email:</label>
-        <input type="email" name="email" required>
-    </div>
-    <div>
-        <label>Employee ID:</label>
-        <input type="text" name="employeeId" required>
-    </div>
-    <div>
-        <label>Department:</label>
-        <select name="departmentId">
-            <option value="">-- Select Department --</option>
-            <option th:each="dept : ${departments}"
-                    th:value="${dept.id}"
-                    th:text="${dept.name + ' (' + dept.code + ')'}"></option>
-        </select>
-    </div>
-    <button type="submit">Register as Teacher</button>
-</form>
+</div>
 
-<p>Already have an account? <a th:href="@{/login}">Login here</a></p>
-<a th:href="@{/dashboard}">Back to Dashboard</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

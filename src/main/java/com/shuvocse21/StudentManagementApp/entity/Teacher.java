@@ -15,10 +15,6 @@ public class Teacher {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-
     @Column(unique = true, nullable = false)
     private String employeeId;
 }

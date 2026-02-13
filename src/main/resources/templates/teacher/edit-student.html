@@ -3,41 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h2>Edit Student</h2>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div th:if="${error}" style="color: red" th:text="${error}"></div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4>Edit Student</h4>
+                </div>
+                <div class="card-body">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-<form th:action="@{'/teacher/update-student/' + ${student.id}}" method="post">
-    <div>
-        <label>Student ID/Roll:</label>
-        <input type="text" th:value="${student.studentId}" readonly>
+                    <form th:action="@{'/teacher/update-student/' + ${student.id}}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Student ID:</label>
+                            <input type="text" class="form-control"
+                                   th:value="${student.studentId}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email:</label>
+                            <input type="email" class="form-control" name="email"
+                                   th:value="${student.user.email}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone:</label>
+                            <input type="text" class="form-control" name="phone"
+                                   th:value="${student.phone}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address:</label>
+                            <input type="text" class="form-control" name="address"
+                                   th:value="${student.address}">
+                        </div>
+                        <button type="submit" class="btn btn-warning">Update Student</button>
+                        <a th:href="@{/teacher/students}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label>Email:</label>
-        <input type="email" name="email" th:value="${student.user.email}" required>
-    </div>
-    <div>
-        <label>Phone:</label>
-        <input type="text" name="phone" th:value="${student.phone}">
-    </div>
-    <div>
-        <label>Address:</label>
-        <input type="text" name="address" th:value="${student.address}">
-    </div>
-    <div>
-        <label>Department:</label>
-        <select name="departmentId">
-            <option th:each="dept : ${departments}"
-                    th:value="${dept.id}"
-                    th:text="${dept.name}"
-                    th:selected="${dept.id == student.department.id}">
-            </option>
-        </select>
-    </div>
-    <button type="submit">Update Student</button>
-    <a th:href="@{/teacher/students}">Cancel</a>
-</form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

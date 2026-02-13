@@ -21,7 +21,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String role; // STUDENT, TEACHER
+    private String role;
 
     private boolean enabled = true;
 }
