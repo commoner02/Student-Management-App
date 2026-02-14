@@ -1,41 +1,58 @@
 package com.shuvocse21.StudentManagementApp.repository;
 
 import com.shuvocse21.StudentManagementApp.entity.Course;
-import org.junit.jupiter.api.BeforeEach;
+import com.shuvocse21.StudentManagementApp.entity.Teacher;
+import com.shuvocse21.StudentManagementApp.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ActiveProfiles("test")
 class CourseRepositoryTest {
 
     @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    private TeacherRepository teacherRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    private Course testCourse;
-
-    @BeforeEach
-    void setUp() {
-        testCourse = new Course();
-        testCourse.setName("Mathematics");
-        testCourse.setCode("MATH101");
-        entityManager.persistAndFlush(testCourse);
-    }
-
+    // ESSENTIAL METHOD
     @Test
-    void testFindAll() {
-        List<Course> courses = courseRepository.findAll();
-        assertThat(courses).isNotEmpty();
-        assertThat(courses.get(0).getCode()).isEqualTo("MATH101");
+    void findByTeacherId() {
+        User user = new User();
+        user.setUsername("professorsmith");
+        user.setPassword("pass123");
+        user.setEmail("smith@school.com");
+        user.setRole("TEACHER");
+        user.setEnabled(true);
+        User savedUser = userRepository.save(user);
+
+        Teacher teacher = new Teacher();
+        teacher.setUser(savedUser);
+        teacher.setEmployeeId("T2001");
+        Teacher savedTeacher = teacherRepository.save(teacher);
+
+        Course course1 = new Course();
+        course1.setName("Mathematics");
+        course1.setCode("MATH201");
+        course1.setTeacher(savedTeacher);
+        courseRepository.save(course1);
+
+        Course course2 = new Course();
+        course2.setName("Physics");
+        course2.setCode("PHY201");
+        course2.setTeacher(savedTeacher);
+        courseRepository.save(course2);
+
+        List<Course> foundCourses = courseRepository.findByTeacherId(savedTeacher.getId());
+
+        assertThat(foundCourses).hasSize(2);
+        assertThat(foundCourses).extracting(Course::getCode)
+                .containsExactlyInAnyOrder("MATH201", "PHY201");
     }
+
+    // NON-ESSENTIAL METHODS (None needed for this file)
 }

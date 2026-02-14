@@ -1,31 +1,25 @@
 package com.shuvocse21.StudentManagementApp.controller;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import com.shuvocse21.StudentManagementApp.service.UserService;
 import com.shuvocse21.StudentManagementApp.dto.StudentDTO;
 import com.shuvocse21.StudentManagementApp.entity.Student;
 import com.shuvocse21.StudentManagementApp.entity.User;
-import com.shuvocse21.StudentManagementApp.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.shuvocse21.StudentManagementApp.config.TestSecurityConfig;
-
-import java.util.Arrays;
-
-import static org.mockito.ArgumentMatchers.*;
+import java.util.ArrayList;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WebMvcTest(StudentController.class)
-@Import(TestSecurityConfig.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class StudentControllerTest {
 
     @Autowired
@@ -34,41 +28,23 @@ class StudentControllerTest {
     @MockBean
     private UserService userService;
 
-    private User testUser;
-    private Student testStudent;
-    private StudentDTO testStudentDTO;
-
-    @BeforeEach
-    void setUp() {
-        testUser = new User();
-        testUser.setId(1L);
-        testUser.setUsername("student1");
-        testUser.setPassword("password");
-        testUser.setEmail("student@example.com");
-        testUser.setRole("STUDENT");
-
-        testStudent = new Student();
-        testStudent.setId(1L);
-        testStudent.setUser(testUser);
-        testStudent.setStudentId("S12345");
-        testStudent.setPhone("1234567890");
-        testStudent.setAddress("Test Address");
-
-        testStudentDTO = new StudentDTO();
-        testStudentDTO.setId(1L);
-        testStudentDTO.setUsername("student1");
-        testStudentDTO.setEmail("student@example.com");
-        testStudentDTO.setStudentId("S12345");
-        testStudentDTO.setPhone("1234567890");
-        testStudentDTO.setAddress("Test Address");
-        testStudentDTO.setCourseCodes(Arrays.asList("MATH101", "PHY101"));
-    }
-
     @Test
     @WithMockUser(username = "student1", roles = "STUDENT")
-    void testDashboard() throws Exception {
-        when(userService.getUserByUsername("student1")).thenReturn(testUser);
-        when(userService.getStudentDTOByUserId(1L)).thenReturn(testStudentDTO);
+    void dashboard() throws Exception {
+        StudentDTO mockStudent = new StudentDTO();
+        mockStudent.setUsername("student1");
+        mockStudent.setStudentId("S1001");
+        mockStudent.setEmail("student@test.com");
+        mockStudent.setPhone("555-1234");
+        mockStudent.setAddress("123 College Ave");
+        mockStudent.setCourseCodes(new ArrayList<>());
+
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("student1");
+
+        when(userService.getUserByUsername("student1")).thenReturn(mockUser);
+        when(userService.getStudentDTOByUserId(1L)).thenReturn(mockStudent);
 
         mockMvc.perform(get("/student/dashboard"))
                 .andExpect(status().isOk())
@@ -78,15 +54,23 @@ class StudentControllerTest {
 
     @Test
     @WithMockUser(username = "student1", roles = "STUDENT")
-    void testUpdateProfile() throws Exception {
-        when(userService.getUserByUsername("student1")).thenReturn(testUser);
-        when(userService.getStudentByUserId(1L)).thenReturn(testStudent);
+    void updateProfile() throws Exception {
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("student1");
+
+        Student mockStudent = new Student();
+        mockStudent.setId(1L);
+        mockStudent.setUser(mockUser);
+
+        when(userService.getUserByUsername("student1")).thenReturn(mockUser);
+        when(userService.getStudentByUserId(1L)).thenReturn(mockStudent);
 
         mockMvc.perform(post("/student/profile/update")
                         .with(csrf())
-                        .param("email", "updated@example.com")
-                        .param("phone", "9999999999")
-                        .param("address", "Updated Address"))
+                        .param("email", "updated@test.com")
+                        .param("phone", "555-9999")
+                        .param("address", "456 New St"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/student/dashboard"))
                 .andExpect(flash().attributeExists("success"));
