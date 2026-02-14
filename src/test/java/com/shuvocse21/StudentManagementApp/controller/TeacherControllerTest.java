@@ -85,30 +85,23 @@ class TeacherControllerTest {
 
     // NON-ESSENTIAL METHODS (Blank)
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void showAddStudentForm() throws Exception { }
+    void showAddStudentForm() { }
 
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void editStudentForm() throws Exception { }
+    void editStudentForm() { }
+    @Test
+
+    void updateStudent() { }
 
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void updateStudent() throws Exception { }
+    void viewCourses()  { }
 
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void viewCourses() throws Exception { }
+    void showAddCourseForm()  { }
 
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void showAddCourseForm() throws Exception { }
+    void addCourse()  { }
 
     @Test
-    @WithMockUser(roles = "TEACHER")
-    void addCourse() throws Exception { }
-
-    @Test
-    @WithMockUser(roles = "TEACHER")
-    void showEnrollStudentForm() throws Exception { }
+    void showEnrollStudentForm() { }
 }
