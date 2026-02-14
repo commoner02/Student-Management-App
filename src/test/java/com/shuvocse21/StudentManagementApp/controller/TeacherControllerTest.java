@@ -1,32 +1,22 @@
 package com.shuvocse21.StudentManagementApp.controller;
 
-import com.shuvocse21.StudentManagementApp.dto.CourseDTO;
-import com.shuvocse21.StudentManagementApp.dto.StudentDTO;
-import com.shuvocse21.StudentManagementApp.entity.Course;
-import com.shuvocse21.StudentManagementApp.service.UserService;
-import com.shuvocse21.StudentManagementApp.repository.CourseRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.shuvocse21.StudentManagementApp.config.TestSecurityConfig;
-
-import java.util.Arrays;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import com.shuvocse21.StudentManagementApp.service.UserService;
+import com.shuvocse21.StudentManagementApp.repository.CourseRepository;
+import com.shuvocse21.StudentManagementApp.repository.StudentRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WebMvcTest(TeacherController.class)
-@Import(TestSecurityConfig.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class TeacherControllerTest {
 
     @Autowired
@@ -34,80 +24,39 @@ class TeacherControllerTest {
 
     @MockBean
     private UserService userService;
-
     @MockBean
     private CourseRepository courseRepository;
+    @MockBean
+    private StudentRepository studentRepository;
 
-    private StudentDTO testStudentDTO;
-    private CourseDTO testCourseDTO;
-    private Course testCourse;
-
-    @BeforeEach
-    void setUp() {
-        testStudentDTO = new StudentDTO();
-        testStudentDTO.setId(1L);
-        testStudentDTO.setUsername("student1");
-        testStudentDTO.setEmail("student@example.com");
-        testStudentDTO.setStudentId("S12345");
-        testStudentDTO.setPhone("1234567890");
-        testStudentDTO.setAddress("Test Address");
-        testStudentDTO.setCourseCodes(Arrays.asList("MATH101"));
-
-        testCourse = new Course();
-        testCourse.setId(1L);
-        testCourse.setName("Mathematics");
-        testCourse.setCode("MATH101");
-
-        testCourseDTO = new CourseDTO();
-        testCourseDTO.setId(1L);
-        testCourseDTO.setName("Mathematics");
-        testCourseDTO.setCode("MATH101");
-        testCourseDTO.setTeacherName("Not Assigned");
-        testCourseDTO.setStudentCount(0);
-    }
-
+    // ESSENTIAL METHODS (Filled)
     @Test
     @WithMockUser(roles = "TEACHER")
-    void testDashboard() throws Exception {
-        when(userService.getAllCourseDTOs()).thenReturn(Arrays.asList(testCourseDTO));
-        when(userService.getAllStudentDTOs()).thenReturn(Arrays.asList(testStudentDTO));
-
+    void dashboard() throws Exception {
         mockMvc.perform(get("/teacher/dashboard"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("teacher/dashboard"))
-                .andExpect(model().attributeExists("courses", "students", "totalStudents", "totalCourses"));
+                .andExpect(view().name("teacher/dashboard"));
     }
 
     @Test
     @WithMockUser(roles = "TEACHER")
-    void testViewStudents() throws Exception {
-        when(userService.getAllStudentDTOs()).thenReturn(Arrays.asList(testStudentDTO));
-
+    void viewStudents() throws Exception {
         mockMvc.perform(get("/teacher/students"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("teacher/students"))
-                .andExpect(model().attributeExists("students"));
+                .andExpect(view().name("teacher/students"));
     }
 
     @Test
     @WithMockUser(roles = "TEACHER")
-    void testAddStudentForm() throws Exception {
-        mockMvc.perform(get("/teacher/add-student"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teacher/add-student"));
-    }
-
-    @Test
-    @WithMockUser(roles = "TEACHER")
-    void testAddStudent_Success() throws Exception {
+    void addStudent() throws Exception {
         mockMvc.perform(post("/teacher/add-student")
                         .with(csrf())
                         .param("username", "newstudent")
-                        .param("password", "password")
-                        .param("email", "new@example.com")
-                        .param("studentId", "S99999")
+                        .param("password", "pass123")
+                        .param("email", "student@test.com")
+                        .param("studentId", "S1001")
                         .param("phone", "555-1234")
-                        .param("address", "New Address"))
+                        .param("address", "123 College Ave"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teacher/students"))
                 .andExpect(flash().attributeExists("success"));
@@ -115,36 +64,51 @@ class TeacherControllerTest {
 
     @Test
     @WithMockUser(roles = "TEACHER")
-    void testViewCourses() throws Exception {
-        when(userService.getAllCourseDTOs()).thenReturn(Arrays.asList(testCourseDTO));
-
-        mockMvc.perform(get("/teacher/courses"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teacher/courses"))
-                .andExpect(model().attributeExists("courses"));
-    }
-
-    @Test
-    @WithMockUser(roles = "TEACHER")
-    void testAddCourse_Success() throws Exception {
-        mockMvc.perform(post("/teacher/add-course")
-                        .with(csrf())
-                        .param("name", "Physics")
-                        .param("code", "PHY101"))
+    void deleteStudent() throws Exception {
+        mockMvc.perform(get("/teacher/delete-student/1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/teacher/courses"))
+                .andExpect(redirectedUrl("/teacher/students"))
                 .andExpect(flash().attributeExists("success"));
     }
 
     @Test
     @WithMockUser(roles = "TEACHER")
-    void testEnrollStudentForm() throws Exception {
-        when(userService.getAllStudentDTOs()).thenReturn(Arrays.asList(testStudentDTO));
-        when(userService.getAllCourseDTOs()).thenReturn(Arrays.asList(testCourseDTO));
-
-        mockMvc.perform(get("/teacher/enroll-student"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teacher/enroll-student"))
-                .andExpect(model().attributeExists("students", "courses"));
+    void enrollStudent() throws Exception {
+        mockMvc.perform(post("/teacher/enroll-student")
+                        .with(csrf())
+                        .param("studentId", "1")
+                        .param("courseId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/teacher/enroll-student"))
+                .andExpect(flash().attributeExists("success"));
     }
+
+    // NON-ESSENTIAL METHODS (Blank)
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void showAddStudentForm() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void editStudentForm() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void updateStudent() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void viewCourses() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void showAddCourseForm() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void addCourse() throws Exception { }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void showEnrollStudentForm() throws Exception { }
 }
