@@ -2,9 +2,9 @@ name: Spring Boot CI/CD
 
 on:
   push:
-    branches: [ "dev", "feature/*", "fix/*" ]
+    branches: [ "dev", "feature/*", "fix/*", test/*" ]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
