@@ -42,7 +42,6 @@ class UserServiceTest {
         testStudent.setStudentId("S1001");
     }
 
-    // ESSENTIAL METHODS
     @Test
     void registerStudent() {
         when(userRepository.existsByUsername("newstudent")).thenReturn(false);
@@ -96,6 +95,35 @@ class UserServiceTest {
 
         verify(studentRepository).save(any(Student.class));
         assertThat(testStudent.getCourses()).contains(testCourse);
+    }
+
+    @Test
+    void enrollStudentInCourse_CourseNotFound_ShouldThrowException() {
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(testStudent));
+        when(courseRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                userService.enrollStudentInCourse(1L, 999L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not found");
+    }
+
+    @Test
+    void enrollStudentInCourse_StudentNotFound_ShouldThrowException() {
+        when(studentRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                userService.enrollStudentInCourse(999L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not found");
+    }
+
+    @Test
+    void registerStudent_WithEmptyFields_ShouldFail() {
+
+        assertThatThrownBy(() ->
+                userService.registerStudent("", "", "", "", "", ""))
+                .isInstanceOf(Exception.class);
     }
 
     // NON-ESSENTIAL METHODS (Blank)

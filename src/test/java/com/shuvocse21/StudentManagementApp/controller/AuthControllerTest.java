@@ -72,4 +72,12 @@ class AuthControllerTest {
                 .andExpect(redirectedUrl("/login"))
                 .andExpect(flash().attributeExists("success"));
     }
+
+    // Test unauthenticated user accessing protected page
+    @Test
+    void unauthenticatedUser_AccessingDashboard_ShouldRedirectToLogin() throws Exception {
+        mockMvc.perform(get("/dashboard"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
 }

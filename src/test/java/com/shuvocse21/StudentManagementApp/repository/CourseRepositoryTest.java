@@ -54,5 +54,4 @@ class CourseRepositoryTest {
                 .containsExactlyInAnyOrder("MATH201", "PHY201");
     }
 
-    // NON-ESSENTIAL METHODS (None needed for this file)
 }

@@ -75,4 +75,35 @@ class StudentControllerTest {
                 .andExpect(redirectedUrl("/student/dashboard"))
                 .andExpect(flash().attributeExists("success"));
     }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void teacher_AccessingStudentDashboard_ShouldBeForbidden() throws Exception {
+        mockMvc.perform(get("/student/dashboard"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "student2", roles = "STUDENT")
+    void dashboard_WithIncompleteStudentData_ShouldStillLoad() throws Exception {
+        User mockUser = new User();
+        mockUser.setId(2L);
+        mockUser.setUsername("student2");
+
+        // Create StudentDTO with DEFAULT values (not null)
+        StudentDTO mockStudent = new StudentDTO();
+        mockStudent.setUsername("student2");
+        mockStudent.setStudentId(""); // Empty but not null
+        mockStudent.setEmail("");     // Empty but not null
+        mockStudent.setPhone("");     // Empty but not null
+        mockStudent.setAddress("");   // Empty but not null
+        mockStudent.setCourseCodes(new ArrayList<>()); // Empty list, not null
+
+        when(userService.getUserByUsername("student2")).thenReturn(mockUser);
+        when(userService.getStudentDTOByUserId(2L)).thenReturn(mockStudent);
+
+        mockMvc.perform(get("/student/dashboard"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("student/dashboard"));
+    }
 }

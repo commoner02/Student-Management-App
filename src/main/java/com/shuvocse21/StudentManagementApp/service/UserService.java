@@ -28,6 +28,19 @@ public class UserService {
     public User registerStudent(String username, String password, String email,
                                 String studentId, String phone, String address) {
 
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+        if (studentId == null || studentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be empty");
+        }
+
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
         }

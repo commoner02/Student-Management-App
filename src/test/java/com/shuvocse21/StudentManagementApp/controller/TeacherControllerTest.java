@@ -29,7 +29,6 @@ class TeacherControllerTest {
     @MockBean
     private StudentRepository studentRepository;
 
-    // ESSENTIAL METHODS (Filled)
     @Test
     @WithMockUser(roles = "TEACHER")
     void dashboard() throws Exception {
@@ -81,6 +80,33 @@ class TeacherControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teacher/enroll-student"))
                 .andExpect(flash().attributeExists("success"));
+    }
+
+    @Test
+    @WithMockUser(roles = "STUDENT")
+    void student_AccessingTeacherDashboard_ShouldBeForbidden() throws Exception {
+        mockMvc.perform(get("/teacher/dashboard"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void deleteStudent_WithInvalidId_ShouldHandleGracefully() throws Exception {
+        mockMvc.perform(get("/teacher/delete-student/9999"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/teacher/students"));
+    }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void enrollStudent_WithInvalidIds_ShouldShowError() throws Exception {
+        mockMvc.perform(post("/teacher/enroll-student")
+                        .with(csrf())
+                        .param("studentId", "9999")
+                        .param("courseId", "9999"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/teacher/enroll-student"));
+
     }
 
     // NON-ESSENTIAL METHODS (Blank)
