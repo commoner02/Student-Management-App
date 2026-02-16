@@ -2,14 +2,14 @@ name: Spring Boot CI/CD
 
 on:
   push:
-    branches: [ "dev", "feature/*", "fix/*", test/*" ]
+    branches: [ "dev", "feature/*", "fix/*", "test/*" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:latest
@@ -41,4 +41,18 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/smsdb_test
           SPRING_DATASOURCE_USERNAME: admin
           SPRING_DATASOURCE_PASSWORD: pass123
-          SPRING_JPA_HIBERNATE_DDL_AUTO: update
+          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Trigger Render Deployment
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
